@@ -10,4 +10,5 @@ public class KafkaesqueTransformerApplication {
 		SpringApplication.run(KafkaesqueTransformerApplication.class, args);
 	}
 
+
 }

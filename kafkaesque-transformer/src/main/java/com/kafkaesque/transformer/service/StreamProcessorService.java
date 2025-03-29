@@ -45,9 +45,10 @@ public class StreamProcessorService {
         KStream<String, String> stream = builder.stream("incoming-events",
                 Consumed.with(Serdes.String(), Serdes.String()));
 
+        // Deduplication transformation, filter events, and process them
         stream.transformValues(deduplicationTransformer(), STORE_NAME)
-              .filter((key, value) -> value != null)
-              .mapValues(this::processEvent)
+                .filter((key, value) -> value != null)
+                .mapValues(this::processEvent)
                 .to((key, value, context) -> {
                     try {
                         JsonNode json = mapper.readTree(value);
