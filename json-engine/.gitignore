@@ -1,0 +1,54 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs
+hs_err_pid*
+
+# IntelliJ project files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Maven / Gradle target / build folders
+target/
+build/
+
+# Eclipse (if used in parallel)
+.classpath
+.project
+.settings/
+
+# VSCode (if opened with VSCode too)
+.vscode/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# Environment and credentials
+.env
+*.key
+*.pem
+*.jks
+*.p12
