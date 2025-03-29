@@ -148,14 +148,6 @@
       ]
     },
     {
-      "name": "timestampToISO_conversion",
-      "engine": "straight-pull",
-      "output": "/timestampISO",
-      "input": ["$.timestamp"],
-      "inputDataType": "timestamp",
-      "outputDataType": "ISODate"
-    },
-    {
       "name": "hardcoded_status",
       "engine": "hard-coded",
       "output": "/status",
