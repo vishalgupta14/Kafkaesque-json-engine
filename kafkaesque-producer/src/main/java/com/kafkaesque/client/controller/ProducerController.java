@@ -23,7 +23,7 @@ public class ProducerController {
     private ProducerService producerService;
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
-
+   //curl -X POST "http://localhost:7072/api/produce/burst/5"
     @PostMapping("/burst/{rate}")
     public String sendBurst(@PathVariable int rate) {
         executor.submit(() -> {
