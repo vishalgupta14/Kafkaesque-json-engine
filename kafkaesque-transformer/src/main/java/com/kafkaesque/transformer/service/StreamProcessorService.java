@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kafkaesque.transformer.model.ClientSchema;
+import com.kafkaesque.transformer.model.mongodb.RawInputEvent;
 import com.kafkaesque.transformer.model.mongodb.TransformationError;
 import com.kafkaesque.transformer.model.mongodb.TransformedEvent;
 import com.kafkaesque.transformer.registry.ClientSchemaRegistry;
 import com.kafkaesque.transformer.repository.TransformationErrorRepository;
 import com.kafkaesque.transformer.repository.TransformedEventRepository;
+import com.kafkaesque.transformer.repository.RawInputEventRepository;
+import com.kafkaesque.transformer.utils.AESUtil;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
@@ -31,14 +34,16 @@ public class StreamProcessorService {
     private final ClientSchemaRegistry schemaRegistry;
     private final TransformationErrorRepository errorRepository;
     private final TransformedEventRepository transformedEventRepository;
+    private final RawInputEventRepository rawInputRepository;
 
     private static final String STORE_NAME = "seen-transactions";
     private static final long RETENTION_MS = TimeUnit.HOURS.toMillis(24);
 
-    public StreamProcessorService(ClientSchemaRegistry schemaRegistry, TransformationErrorRepository errorRepository, TransformedEventRepository transformedEventRepository) {
+    public StreamProcessorService(ClientSchemaRegistry schemaRegistry, TransformationErrorRepository errorRepository, TransformedEventRepository transformedEventRepository, RawInputEventRepository rawInputRepository) {
         this.schemaRegistry = schemaRegistry;
         this.errorRepository = errorRepository;
         this.transformedEventRepository = transformedEventRepository;
+        this.rawInputRepository = rawInputRepository;
     }
 
     public void buildPipeline(StreamsBuilder builder) {
@@ -103,6 +108,15 @@ public class StreamProcessorService {
             JsonNode inputJson = mapper.readTree(value);
             String clientId = inputJson.get("clientId").asText();
             String txnId = inputJson.get("transactionId").asText();
+
+            // 🟢 Save raw input immediately
+            RawInputEvent raw = new RawInputEvent();
+            raw.setClientId(clientId);
+            raw.setTransactionId(txnId);
+            raw.setEncryptedPayload(AESUtil.encrypt(value)); // or store as-is
+            raw.setReceivedAt(Instant.now());
+            rawInputRepository.save(raw);
+
             ClientSchema clientSchema = schemaRegistry.getSchema(clientId);
             if (clientSchema == null) throw new RuntimeException("No schema found for client: " + clientId);
             String schemaJson = mapper.writeValueAsString(clientSchema.getSchema());

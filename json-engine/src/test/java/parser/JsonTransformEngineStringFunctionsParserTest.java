@@ -61,7 +61,7 @@ public class JsonTransformEngineStringFunctionsParserTest {
                      {
                        "name": "toUpperCaseTest",
                        "engine": "string-operation",
-                       "output": "/uppercaseValue",
+                       "output": "/uppercaseValue/test",
                        "input": ["$.username"],
                        "function": "toUpperCase"
                      },
